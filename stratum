@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>STRATUM 3D</title>
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+    <style>
+        :root { 
+            --system-blue: #00f2ff; 
+            --system-bg: #000000;
+            --glass: rgba(255, 255, 255, 0.08);
+            --squircle: 40px;
+        }
+        
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: var(--system-bg); color: white; font-family: -apple-system, sans-serif; overflow: hidden; }
+
+        /* LOADING SCREENS */
+        #splash-screen, #ar-loading {
+            position: fixed; inset: 0; background: #000; z-index: 9999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.8s ease;
+        }
+        #ar-loading { z-index: 9998; opacity: 0; pointer-events: none; background: rgba(0,0,0,0.95); backdrop-filter: blur(15px); }
+
+        /* 3D ISOMETRIC ANIMATION - STRICT SEQUENCE */
+        .logo-box { width: 160px; height: 160px; margin-bottom: 20px; }
+        .stratum-3d-layer { 
+            opacity: 0; 
+            transform: translateY(-100px) scale(0.9); 
+            transition: all 0.9s cubic-bezier(0.23, 1, 0.32, 1); 
+            fill: none; 
+            stroke: var(--system-blue); 
+            stroke-width: 2;
+        }
+        
+        /* Sequential drop: Bottom (0.5s), Mid (1.2s), Top (1.9s) */
+        .animate .layer-bottom { opacity: 1; transform: translateY(0) scale(1); transition-delay: 0.5s; }
+        .animate .layer-mid { opacity: 1; transform: translateY(0) scale(1); transition-delay: 1.2s; }
+        .animate .layer-top { opacity: 1; transform: translateY(0) scale(1); transition-delay: 1.9s; }
+        
+        /* Final Shine on the whole logo */
+        .shine-path { stroke-dasharray: 1000; stroke-dashoffset: 1000; }
+        .animate .shine-path { animation: shine-draw 1.5s ease forwards 2.8s; }
+        @keyframes shine-draw { to { stroke-dashoffset: 0; } }
+
+        .loading-text { font-size: 10px; text-transform: uppercase; letter-spacing: 5px; color: var(--system-blue); font-weight: 700; margin-top: 30px; opacity: 0; animation: fadeIn 0.5s ease forwards 0.5s; }
+        @keyframes fadeIn { to { opacity: 1; } }
+
+        /* HEADER */
+        header { 
+            height: 60px; display: flex; align-items: center; justify-content: space-between; 
+            padding: 10px 24px; background: rgba(0,0,0,0.8); backdrop-filter: blur(20px); z-index: 1000;
+        }
+        .logo-text { font-weight: 900; font-size: 20px; letter-spacing: -1px; color: #fff; }
+
+        /* CAROUSEL & SWIPE LOGIC */
+        #carousel { 
+            display: flex; 
+            overflow-x: auto; 
+            scroll-snap-type: x mandatory; 
+            width: 100vw; 
+            height: 100vh; 
+            scroll-behavior: smooth; 
+            margin-top: -60px;
+            -webkit-overflow-scrolling: touch;
+        }
+        #carousel::-webkit-scrollbar { display: none; }
+        
+        .model-card { 
+            min-width: 100vw; 
+            height: 100vh; 
+            scroll-snap-align: start; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+        }
+
+        .viewer-container { 
+            width: 90%; 
+            height: 70%; 
+            background: #0a0a0a; 
+            border-radius: var(--squircle); 
+            border: 1px solid rgba(255,255,255,0.1); 
+            overflow: hidden;
+            position: relative;
+        }
+        
+        /* Prevents model-viewer from eating the swipe gesture */
+        .swipe-overlay { position: absolute; inset: 0; z-index: 5; }
+
+        model-viewer { width: 100%; height: 100%; display: none; }
+        model-viewer.active { display: block; }
+
+        /* UI ELEMENTS */
+        .bottom-dock { position: fixed; bottom: 0; left: 0; right: 0; padding: 40px 24px 60px; display: flex; flex-direction: column; align-items: center; z-index: 500; pointer-events: none; }
+        .ar-trigger-btn { background: var(--glass); color: #fff; border: 1px solid rgba(255, 255, 255, 0.15); padding: 18px 45px; border-radius: 26px; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; backdrop-filter: blur(20px); pointer-events: auto; margin-bottom: 30px; }
+        .dot { width: 6px; height: 6px; background: rgba(255,255,255,0.2); border-radius: 50%; transition: 0.4s; }
+        .dot.active { background: var(--system-blue); width: 24px; border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+    <div id="splash-screen">
+        <div class="logo-box animate">
+            <svg viewBox="0 0 100 100">
+                <!-- 3D Slabs inspired by image_3.png -->
+                <path class="stratum-3d-layer layer-bottom" d="M20 75 L50 88 L80 75 L50 62 Z M20 75 L20 80 L50 93 L80 80 L80 75" />
+                <path class="stratum-3d-layer layer-mid" d="M20 52 L50 65 L80 52 L50 39 Z M20 52 L20 57 L50 70 L80 57 L80 52" />
+                <path class="stratum-3d-layer layer-top shine-path" d="M20 29 L50 42 L80 29 L50 16 Z M20 29 L20 34 L50 47 L80 34 L80 29" />
+            </svg>
+        </div>
+        <div class="loading-text">Initialising Stratum</div>
+    </div>
+
+    <div id="ar-loading">
+        <div class="logo-box" id="ar-logo-container"></div>
+        <div class="loading-text">Visualising in AR</div>
+    </div>
+
+    <header>
+        <span class="logo-text">STRATUM3D</span>
+        <label style="color:var(--system-blue); font-size:12px; font-weight:700;">IMPORT<input type="file" id="file-input" multiple style="display: none;"></label>
+    </header>
+
+    <div id="carousel">
+        <div class="model-card"><p style="opacity:0.2;">AWAITING DATA</p></div>
+    </div>
+    
+    <div class="bottom-dock">
+        <button id="main-ar-btn" class="ar-trigger-btn" style="display:none;">Visualise</button>
+        <div style="display:flex; gap:10px;" id="dots"></div>
+    </div>
+
+    <script type="module">
+        const splash = document.getElementById('splash-screen');
+        const arLoading = document.getElementById('ar-loading');
+        const arLogoBox = document.getElementById('ar-logo-container');
+        const fileInput = document.querySelector('#file-input');
+        const carousel = document.querySelector('#carousel');
+        const dotsContainer = document.querySelector('#dots');
+        const mainBtn = document.querySelector('#main-ar-btn');
+        let currentFiles = [];
+
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                splash.style.opacity = '0';
+                setTimeout(() => splash.remove(), 800);
+            }, 5000);
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            currentFiles = Array.from(e.target.files);
+            if (currentFiles.length === 0) return;
+            carousel.innerHTML = ''; dotsContainer.innerHTML = '';
+            mainBtn.style.display = 'block';
+            currentFiles.forEach((file, index) => {
+                const url = URL.createObjectURL(file);
+                const card = document.createElement('div');
+                card.className = 'model-card';
+                card.innerHTML = `<div class="viewer-container">
+                    <div class="swipe-overlay"></div>
+                    <model-viewer id="v-${index}" src="${url}" ar ar-modes="webxr" camera-controls loading="lazy"></model-viewer>
+                </div>`;
+                carousel.appendChild(card);
+                const dot = document.createElement('div');
+                dot.className = `dot ${index === 0 ? 'active' : ''}`;
+                dotsContainer.appendChild(dot);
+            });
+            updateUI(0);
+        });
+
+        function updateUI(index) {
+            mainBtn.innerText = `Visualise ${currentFiles[index].name.split('.')[0].toUpperCase()}`;
+            document.querySelectorAll('model-viewer').forEach((mv, i) => {
+                i === index ? mv.classList.add('active') : mv.classList.remove('active');
+            });
+            document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === index));
+        }
+
+        carousel.addEventListener('scroll', () => {
+            const idx = Math.round(carousel.scrollLeft / carousel.offsetWidth);
+            updateUI(idx);
+        });
+
+        mainBtn.addEventListener('click', () => {
+            const idx = Math.round(carousel.scrollLeft / carousel.offsetWidth);
+            arLogoBox.innerHTML = splash.querySelector('.logo-box').innerHTML;
+            arLoading.style.opacity = '1';
+            arLoading.style.pointerEvents = 'auto';
+            setTimeout(() => { 
+                document.querySelector(`#v-${idx}`).activateAR();
+                arLoading.style.opacity = '0';
+            }, 3000);
+        });
+    </script>
+</body>
+</html>
