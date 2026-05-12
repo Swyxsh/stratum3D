@@ -7,70 +7,107 @@
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     <style>
         :root { 
-            --system-blue: #00f2ff; /* Your signature hex value */
-            --glass-cyan: rgba(0, 242, 255, 0.15);
-            --system-bg: #000000;
+            --stratum-cyan: #00f2ff;
+            --glass-black: rgba(15, 15, 15, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.12);
+            --bg-dark: #000000;
         }
         
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: var(--system-bg); color: white; font-family: -apple-system, sans-serif; overflow: hidden; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: var(--bg-dark); color: white; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; overflow: hidden; }
 
-        /* LOADING SCREEN FIX */
+        /* --- LOADING SCREEN: SEQUENTIAL ANIMATION --- */
         #splash-screen {
-            position: fixed; inset: 0; background: #000; z-index: 9999;
+            position: fixed; inset: 0; background: var(--bg-dark); z-index: 9999;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             transition: opacity 0.8s ease;
         }
 
-        /* COLORED GLASS LOGO ANIMATION */
-        .logo-box { width: 160px; height: 160px; position: relative; }
-        .stratum-3d-layer { 
+        .logo-box { width: 180px; height: 180px; position: relative; }
+        
+        .stratum-layer { 
             opacity: 0; 
-            transform: translateY(-60px); 
-            fill: var(--glass-cyan); /* Glass effect */
-            stroke: var(--system-blue); 
-            stroke-width: 1.5;
-            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            transform: translateY(30px); 
+            fill: rgba(0, 242, 255, 0.1); 
+            stroke: var(--stratum-cyan); 
+            stroke-width: 1.2;
+            filter: drop-shadow(0 0 8px rgba(0, 242, 255, 0.4));
+            transition: all 0.7s cubic-bezier(0.2, 0.8, 0.2, 1); 
         }
         
-        /* Sequence: Bottom, Mid, Top */
-        .animate .layer-bottom { opacity: 1; transform: translateY(0); transition-delay: 0.5s; }
+        /* Sequential Build-up */
+        .animate .layer-bottom { opacity: 1; transform: translateY(0); transition-delay: 0.4s; }
         .animate .layer-mid { opacity: 1; transform: translateY(0); transition-delay: 1.0s; }
-        .animate .layer-top { opacity: 1; transform: translateY(0); transition-delay: 1.5s; }
+        .animate .layer-top { opacity: 1; transform: translateY(0); transition-delay: 1.6s; }
         
         .loading-text { 
-            font-size: 10px; text-transform: uppercase; letter-spacing: 5px; 
-            color: var(--system-blue); margin-top: 30px; 
+            font-size: 11px; text-transform: uppercase; letter-spacing: 6px; 
+            color: var(--stratum-cyan); margin-top: 40px; font-weight: 300;
+            animation: pulse 2s infinite ease-in-out;
         }
 
-        /* HEADER & IMPORT BUTTON FIX */
+        /* --- HEADER & GLASS BUTTONS --- */
         header { 
-            height: 70px; display: flex; align-items: center; justify-content: space-between; 
-            padding: 0 24px; background: rgba(0,0,0,0.8); backdrop-filter: blur(20px); z-index: 1000;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            height: 80px; display: flex; align-items: center; justify-content: space-between; 
+            padding: 0 25px; z-index: 1000; position: relative;
         }
-        .logo-text { font-weight: 900; font-size: 20px; letter-spacing: -1px; }
+        
+        .logo-text { font-weight: 800; font-size: 22px; letter-spacing: -0.5px; }
 
-        /* Functional Import Label */
-        .import-btn {
-            color: var(--system-blue); font-size: 11px; font-weight: 800;
-            border: 1px solid var(--system-blue); padding: 8px 16px;
-            border-radius: 8px; cursor: pointer; display: inline-block;
+        .glass-btn {
+            background: var(--glass-black);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            border-top: 1px solid rgba(255,255,255,0.2); /* Glass highlight */
+            color: var(--stratum-cyan);
+            font-size: 12px; font-weight: 600; text-transform: uppercase;
+            padding: 10px 20px; border-radius: 12px;
+            cursor: pointer; transition: 0.3s;
         }
 
-        /* CAROUSEL */
+        /* --- MAIN CAROUSEL --- */
         #carousel { 
             display: flex; overflow-x: auto; scroll-snap-type: x mandatory; 
-            width: 100vw; height: calc(100vh - 70px); scroll-behavior: smooth;
+            width: 100vw; height: calc(100vh - 100px); scroll-behavior: smooth;
         }
-        .model-card { min-width: 100vw; height: 100%; scroll-snap-align: start; display: flex; align-items: center; justify-content: center; }
+        #carousel::-webkit-scrollbar { display: none; }
+
+        .model-card { 
+            min-width: 100vw; height: 100%; scroll-snap-align: start; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+        }
         
-        .viewer-container { 
-            width: 85%; height: 65%; background: rgba(255,255,255,0.03); 
-            border-radius: 30px; border: 1px solid rgba(255,255,255,0.1); 
+        /* The Card Frame from image_5.png */
+        .glass-card { 
+            width: 90%; height: 75%; 
+            background: rgba(255,255,255,0.02);
+            border-radius: 40px; 
+            border: 1px solid var(--glass-border);
             overflow: hidden; position: relative;
+            display: flex; flex-direction: column;
         }
 
-        model-viewer { width: 100%; height: 100%; outline: none; }
+        model-viewer { width: 100%; height: 85%; outline: none; background: transparent; }
+
+        /* VISUALISE BUTTON ON CARD */
+        .ar-overlay {
+            width: 100%; padding: 20px 0;
+            display: flex; justify-content: center; align-items: center;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+        }
+
+        .visualise-btn {
+            width: 85%; background: var(--glass-black);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-top: 1px solid rgba(255,255,255,0.2);
+            color: white; padding: 16px; border-radius: 50px;
+            font-size: 11px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 1px; display: flex; justify-content: center;
+        }
+
+        @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
     </style>
 </head>
 <body>
@@ -78,24 +115,28 @@
     <div id="splash-screen">
         <div class="logo-box animate">
             <svg viewBox="0 0 100 100">
-                <path class="stratum-3d-layer layer-bottom" d="M20 75 L50 88 L80 75 L50 62 Z M20 75 L20 80 L50 93 L80 80 L80 75" />
-                <path class="stratum-3d-layer layer-mid" d="M20 52 L50 65 L80 52 L50 39 Z M20 52 L20 57 L50 70 L80 57 L80 52" />
-                <path class="stratum-3d-layer layer-top" d="M20 29 L50 42 L80 29 L50 16 Z M20 29 L20 34 L50 47 L80 34 L80 29" />
+                <path class="stratum-layer layer-bottom" d="M20 75 L50 88 L80 75 L50 62 Z M20 75 L20 80 L50 93 L80 80 L80 75" />
+                <path class="stratum-layer layer-mid" d="M20 52 L50 65 L80 52 L50 39 Z M20 52 L20 57 L50 70 L80 57 L80 52" />
+                <path class="stratum-layer layer-top" d="M20 29 L50 42 L80 29 L50 16 Z M20 29 L20 34 L50 47 L80 34 L80 29" />
             </svg>
         </div>
-        <div class="loading-text">Loading STRATUM 3D</div>
+        <div class="loading-text">Initialising Stratum</div>
     </div>
 
     <header>
-        <span class="logo-text">STRATUM3D</span>
-        <label class="import-btn">
-            IMPORT FILE
+        <span class="logo-text">Stratum</span>
+        <label class="glass-btn">
+            Import
             <input type="file" id="file-input" multiple style="display: none;">
         </label>
     </header>
 
     <div id="carousel">
-        <div class="model-card"><p style="opacity:0.3">Upload .glb or .gltf files</p></div>
+        <div class="model-card">
+            <div class="glass-card" style="justify-content: center; align-items: center; opacity: 0.4;">
+                <p>Upload 3D Models (.glb/.gltf)</p>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -103,12 +144,12 @@
         const fileInput = document.getElementById('file-input');
         const carousel = document.getElementById('carousel');
 
-        // Auto-remove splash screen after animation completes
+        // Splash handling
         window.addEventListener('load', () => {
             setTimeout(() => {
                 splash.style.opacity = '0';
                 setTimeout(() => splash.remove(), 800);
-            }, 3500);
+            }, 3800);
         });
 
         fileInput.addEventListener('change', (e) => {
@@ -118,11 +159,18 @@
             carousel.innerHTML = '';
             files.forEach((file) => {
                 const url = URL.createObjectURL(file);
+                const fileName = file.name.replace(/\.[^/.]+$/, "").toUpperCase();
+                
                 const card = document.createElement('div');
                 card.className = 'model-card';
                 card.innerHTML = `
-                    <div class="viewer-container">
-                        <model-viewer src="${url}" ar camera-controls touch-action="pan-y"></model-viewer>
+                    <div class="glass-card">
+                        <model-viewer src="${url}" ar ar-modes="webxr scene-viewer quick-look" camera-controls touch-action="pan-y"></model-viewer>
+                        <div class="ar-overlay">
+                            <button class="visualise-btn" onclick="this.parentElement.previousElementSibling.activateAR()">
+                                VISUALISE ${fileName}
+                            </button>
+                        </div>
                     </div>`;
                 carousel.appendChild(card);
             });
