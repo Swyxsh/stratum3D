@@ -13,128 +13,136 @@
         }
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; color: white; font-family: -apple-system, system-ui; overflow: hidden; }
 
-        /* --- LOGO: TIGHT ISOMETRIC STACK --- */
+        /* --- LOGO FIX: HOLLOW SQUARES & TIGHT STACK --- */
         #splash {
             position: fixed; inset: 0; background: #000; z-index: 9999;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             transition: opacity 0.6s ease;
         }
-        .logo-container { width: 130px; }
+        .logo-container { width: 140px; }
         .s-layer { 
-            fill: none; stroke: var(--accent); stroke-width: 2.2; opacity: 0;
+            fill: none; stroke: var(--accent); stroke-width: 2; opacity: 0;
             filter: drop-shadow(0 0 8px rgba(0, 242, 255, 0.4));
-            transition: all 0.7s cubic-bezier(0.19, 1, 0.22, 1);
+            transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1);
         }
-        .anim .l-bottom { opacity: 0.3; transform: translateY(14px); transition-delay: 0.1s; }
-        .anim .l-mid { opacity: 0.6; transform: translateY(7px); transition-delay: 0.4s; }
-        .anim .l-top { opacity: 1; transform: translateY(0px); transition-delay: 0.8s; }
-        .loading-text { letter-spacing: 4px; font-size: 9px; color: var(--accent); font-weight: 300; margin-top: 20px; }
+        /* Tightened Y-transformations for that image_11 look */
+        .anim .l-bottom { opacity: 0.3; transform: translateY(10px); transition-delay: 0.1s; }
+        .anim .l-mid { opacity: 0.6; transform: translateY(5px); transition-delay: 0.3s; }
+        .anim .l-top { opacity: 1; transform: translateY(0px); transition-delay: 0.5s; }
+        .loading-text { letter-spacing: 4px; font-size: 9px; color: var(--accent); font-weight: 300; margin-top: 25px; text-transform: uppercase; }
 
-        /* --- LAYOUT FIX --- */
+        /* --- AR LOADING OVERLAY --- */
+        #ar-loading {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 10000;
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+        }
+
+        /* --- LAYOUT: CARD & DOTS --- */
         header { height: 8vh; display: flex; align-items: center; justify-content: space-between; padding: 0 6vw; position: relative; z-index: 100; }
         .logo-txt { font-weight: 900; font-size: 22px; letter-spacing: -0.5px; }
-        .import-btn { background: var(--glass); border: 1px solid var(--border); border-top: 1px solid rgba(255,255,255,0.2); color: var(--accent); font-size: 10px; font-weight: 800; padding: 8px 16px; border-radius: 10px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
-
-        #carousel { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; height: 78vh; width: 100vw; -webkit-overflow-scrolling: touch; }
+        
+        #carousel { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; height: 82vh; width: 100vw; -webkit-overflow-scrolling: touch; }
         #carousel::-webkit-scrollbar { display: none; }
         .card-scene { min-width: 100vw; height: 100%; display: flex; align-items: center; justify-content: center; scroll-snap-align: center; scroll-snap-stop: always; }
         
         .main-card { 
-            width: 90vw; height: 72vh; background: #080808; border-radius: 38px; 
+            width: 90vw; height: 76vh; background: #080808; border-radius: 40px; 
             border: 1px solid var(--border); overflow: hidden; position: relative;
         }
 
-        /* --- THE GRADUAL BLUE FALL-OFF & GLOWING BUTTON --- */
+        /* --- DISAPPEARING BOTTOM & BUTTON GLOW --- */
         .vignette-bottom {
-            position: absolute; bottom: 0; width: 100%; height: 45%;
-            background: linear-gradient(to top, 
-                rgba(0, 10, 15, 1) 0%, 
-                rgba(0, 40, 50, 0.4) 40%, 
-                transparent 100%
-            );
-            backdrop-filter: blur(var(--blur-amount, 0px));
-            mask-image: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.5) 50%, transparent 100%);
-            -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.5) 50%, transparent 100%);
+            position: absolute; bottom: 0; width: 100%; height: 40%;
+            background: linear-gradient(to top, rgba(0, 15, 20, 1) 0%, rgba(0, 40, 50, 0.3) 45%, transparent 100%);
             display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
-            padding-bottom: 3vh;
-            pointer-events: none;
-        }
-
-        .blur-layer {
-            position: absolute; inset: 0;
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            mask-image: linear-gradient(to top, black 0%, transparent 60%);
-            -webkit-mask-image: linear-gradient(to top, black 0%, transparent 60%);
+            padding-bottom: 3.5vh; pointer-events: none;
+            mask-image: linear-gradient(to top, black 20%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to top, black 20%, transparent 100%);
         }
 
         .vis-pill { 
-            width: 82%; background: rgba(25, 25, 25, 0.5); border: 1px solid var(--border); 
+            width: 80%; background: rgba(30, 30, 30, 0.6); border: 1px solid var(--border); 
             border-top: 1px solid rgba(255,255,255,0.2); padding: 18px; border-radius: 50px; 
-            color: white; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-align: center;
-            pointer-events: auto; backdrop-filter: blur(5px);
-            /* Define the glow transition */
-            transition: all 0.15s ease-out, box-shadow 0.1s ease-out;
+            color: white; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-align: center;
+            pointer-events: auto; backdrop-filter: blur(10px); transition: 0.3s;
         }
-
-        /* --- THE GLOW EFFECT WHEN PRESSED --- */
         .vis-pill:active { 
-            background: rgba(0, 242, 255, 0.6); /* Translucent Stratum color */
-            border-color: var(--accent);
-            color: #000; /* Black text for contrast */
-            /* Neon Box-Shadow Glow */
-            box-shadow: 0 0 20px 5px rgba(0, 242, 255, 0.7), 0 0 40px 10px rgba(0, 242, 255, 0.4);
-            transform: scale(0.97); /* Subtle press-down scale */
+            transform: scale(0.96); background: var(--accent); color: #000;
+            box-shadow: 0 0 30px var(--accent);
         }
 
-        /* --- PAGINATION --- */
-        .pagi-wrap { height: 10vh; display: flex; align-items: center; justify-content: center; }
-        .dot { width: 6px; height: 6px; background: rgba(255,255,255,0.15); border-radius: 50%; transition: 0.4s; margin: 0 4px; }
-        .dot.active { width: 22px; background: var(--accent); border-radius: 10px; }
+        /* --- PAGINATION (THE DOTS) --- */
+        .dots-container { height: 10vh; display: flex; align-items: center; justify-content: center; position: absolute; bottom: 0; width: 100%; }
+        .dot { width: 5px; height: 5px; background: rgba(255,255,255,0.15); border-radius: 50%; transition: 0.4s; margin: 0 4px; }
+        .dot.active { width: 18px; background: var(--accent); border-radius: 10px; }
     </style>
 </head>
 <body>
 
+    <!-- Splash Screen -->
     <div id="splash">
         <div class="logo-container" id="logo-box">
             <svg viewBox="0 0 100 110">
-                <path class="s-layer l-bottom" d="M25 70 L50 82 L75 70 L50 58 Z M25 70 L25 74 L50 86 L75 74 L75 70" />
-                <path class="s-layer l-mid" d="M25 50 L50 62 L75 50 L50 38 Z M25 50 L25 54 L50 66 L75 54 L75 50" />
-                <path class="s-layer l-top" d="M25 30 L50 42 L75 30 L50 18 Z M25 30 L25 34 L50 46 L75 34 L75 30" />
+                <!-- Hollow Slabs (Paths create the center cut-out) -->
+                <path class="s-layer l-bottom" d="M20 70 L50 85 L80 70 L50 55 Z M35 70 L50 78 L65 70 L50 62 Z" />
+                <path class="s-layer l-mid" d="M20 50 L50 65 L80 50 L50 35 Z M35 50 L50 58 L65 50 L50 42 Z" />
+                <path class="s-layer l-top" d="M20 30 L50 45 L80 30 L50 15 Z M35 30 L50 38 L65 30 L50 22 Z" />
             </svg>
         </div>
-        <div class="loading-text">INITIALISING STRATUM3D</div>
+        <div class="loading-text">Initialising Stratum</div>
+    </div>
+
+    <!-- AR Loading State -->
+    <div id="ar-loading">
+        <div class="logo-container">
+            <svg viewBox="0 0 100 110">
+                <path class="s-layer l-bottom" style="opacity:1; transform:translateY(10px);" d="M20 70 L50 85 L80 70 L50 55 Z M35 70 L50 78 L65 70 L50 62 Z" />
+                <path class="s-layer l-mid" style="opacity:1; transform:translateY(5px);" d="M20 50 L50 65 L80 50 L50 35 Z M35 50 L50 58 L65 50 L50 42 Z" />
+                <path class="s-layer l-top" style="opacity:1; transform:translateY(0px);" d="M20 30 L50 45 L80 30 L50 15 Z M35 30 L50 38 L65 30 L50 22 Z" />
+            </svg>
+        </div>
+        <div class="loading-text">Visualising in AR</div>
     </div>
 
     <header>
         <div class="logo-txt">STRATUM3D</div>
-        <label class="import-btn">IMPORT<input type="file" id="file-in" multiple style="display: none;"></label>
+        <label style="background:var(--glass); padding:8px 16px; border-radius:10px; font-size:10px; border:1px solid var(--border); color:var(--accent);">
+            IMPORT<input type="file" id="file-in" multiple style="display: none;">
+        </label>
     </header>
 
     <div id="carousel">
         <div class="card-scene">
             <div class="main-card" style="display:flex; align-items:center; justify-content:center; color:#444; font-size: 11px; letter-spacing: 1.5px; text-align:center;">
-                DROP .GLB / .GLTF<br>TO START VISUALISING
+                UPLOAD .GLB TO START
             </div>
         </div>
     </div>
 
-    <div class="pagi-wrap">
+    <div class="dots-container">
         <div id="pagi" style="display:flex;"></div>
     </div>
 
     <script>
         const carousel = document.getElementById('carousel');
         const pagi = document.getElementById('pagi');
-        const logoBox = document.getElementById('logo-box');
+        const arOverlay = document.getElementById('ar-loading');
 
         window.onload = () => {
-            logoBox.classList.add('anim');
+            document.getElementById('logo-box').classList.add('anim');
             setTimeout(() => {
                 document.getElementById('splash').style.opacity = '0';
                 setTimeout(() => document.getElementById('splash').remove(), 600);
-            }, 3000);
+            }, 2500);
         };
+
+        function startAR(modelViewer) {
+            arOverlay.style.display = 'flex';
+            modelViewer.activateAR();
+            // Hide overlay after a few seconds or when returning
+            setTimeout(() => { arOverlay.style.display = 'none'; }, 4000);
+        }
 
         document.getElementById('file-in').addEventListener('change', (e) => {
             const files = Array.from(e.target.files);
@@ -145,10 +153,9 @@
                 const scene = document.createElement('div');
                 scene.className = 'card-scene';
                 scene.innerHTML = `<div class="main-card">
-                    <model-viewer src="${url}" ar camera-controls touch-action="pan-y" interaction-prompt="none"></model-viewer>
+                    <model-viewer src="${url}" ar camera-controls touch-action="pan-y"></model-viewer>
                     <div class="vignette-bottom">
-                        <div class="blur-layer"></div>
-                        <div class="vis-pill" onclick="this.parentElement.previousElementSibling.activateAR()">VISUALISE ${name}</div>
+                        <div class="vis-pill" onclick="startAR(this.parentElement.previousElementSibling)">VISUALISE ${name}</div>
                     </div>
                 </div>`;
                 carousel.appendChild(scene);
