@@ -6,104 +6,66 @@
     <title>STRATUM 3D</title>
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     <style>
-        :root { 
-            --accent: #00f2ff;
-            --glass: rgba(10, 10, 10, 0.8);
-            --border: rgba(255, 255, 255, 0.12);
-        }
-        
+        :root { --accent: #00f2ff; --glass: rgba(10, 10, 10, 0.85); --border: rgba(255, 255, 255, 0.12); }
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; color: white; font-family: -apple-system, system-ui; overflow: hidden; }
 
-        /* --- LOADING SCREEN: FIX --- */
+        /* --- LOGO FIX: COMPACT ISOMETRIC STACK --- */
         #splash {
             position: fixed; inset: 0; background: #000; z-index: 9999;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transition: opacity 0.8s ease;
+            transition: opacity 0.6s ease;
         }
-
-        .logo-container { width: 160px; margin-bottom: 20px; }
+        .logo-container { width: 140px; margin-bottom: 10px; }
         .s-layer { 
-            fill: none; stroke: var(--accent); stroke-width: 2.5; opacity: 0;
-            filter: drop-shadow(0 0 10px rgba(0, 242, 255, 0.6));
-            transition: all 0.9s cubic-bezier(0.19, 1, 0.22, 1);
-            transform: translateY(60px);
+            fill: none; stroke: var(--accent); stroke-width: 2.2; opacity: 0;
+            filter: drop-shadow(0 0 8px rgba(0, 242, 255, 0.5));
+            transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1);
+            transform: translateY(40px); /* Reduced distance */
         }
+        /* Tight stack coordinates */
+        .anim .l-bottom { opacity: 0.4; transform: translateY(18px); transition-delay: 0.2s; }
+        .anim .l-mid { opacity: 0.7; transform: translateY(9px); transition-delay: 0.6s; }
+        .anim .l-top { opacity: 1; transform: translateY(0px); transition-delay: 1s; }
 
-        /* Sequential Animation Trigger */
-        .anim .l-bottom { opacity: 0.5; transform: translateY(35px); transition-delay: 0.3s; }
-        .anim .l-mid { opacity: 0.8; transform: translateY(15px); transition-delay: 0.9s; }
-        .anim .l-top { opacity: 1; transform: translateY(-5px); transition-delay: 1.5s; }
+        .loading-text { letter-spacing: 4px; font-size: 9px; color: var(--accent); font-weight: 300; margin-top: 15px; }
 
-        .loading-text { letter-spacing: 5px; font-size: 10px; color: var(--accent); font-weight: 300; }
+        header { height: 80px; display: flex; align-items: center; justify-content: space-between; padding: 0 25px; position: absolute; top: 0; width: calc(100% - 50px); z-index: 100; }
+        .logo-txt { font-weight: 900; font-size: 22px; letter-spacing: -0.5px; }
+        .import-btn { background: var(--glass); border: 1px solid var(--border); border-top: 1px solid rgba(255,255,255,0.2); color: var(--accent); font-size: 10px; font-weight: 800; padding: 8px 16px; border-radius: 10px; backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); }
 
-        /* --- HEADER: TOP LEFT LOGO FIX --- */
-        header { 
-            height: 90px; display: flex; align-items: center; justify-content: space-between; 
-            padding: 0 25px; position: absolute; top: 0; width: calc(100% - 50px); z-index: 100;
-        }
-        .logo-txt { font-weight: 900; font-size: 24px; letter-spacing: -0.5px; }
-
-        .import-btn {
-            background: var(--glass); border: 1px solid var(--border); border-top: 1px solid rgba(255,255,255,0.2);
-            color: var(--accent); font-size: 10px; font-weight: 800;
-            padding: 10px 20px; border-radius: 12px; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-        }
-
-        /* --- BUMBLE-STYLE SNAP CAROUSEL --- */
-        #carousel { 
-            display: flex; overflow-x: auto; 
-            scroll-snap-type: x mandatory; /* The "Bumble" snap */
-            height: 100vh; width: 100vw;
-        }
+        /* --- BUMBLE SNAP CAROUSEL --- */
+        #carousel { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; height: 100vh; width: 100vw; -webkit-overflow-scrolling: touch; }
         #carousel::-webkit-scrollbar { display: none; }
-
-        .card-scene { 
-            min-width: 100vw; height: 100%; display: flex; align-items: center; justify-content: center; 
-            scroll-snap-align: center; /* Locks the card in center */
-            scroll-snap-stop: always; /* Prevents skipping cards */
-        }
+        .card-scene { min-width: 100vw; height: 100%; display: flex; align-items: center; justify-content: center; scroll-snap-align: center; scroll-snap-stop: always; }
         
-        .main-card { 
-            width: 92%; height: 80%; background: #0a0a0a; border-radius: 40px; 
-            border: 1px solid var(--border); overflow: hidden; position: relative;
-        }
-
+        .main-card { width: 92%; height: 82%; background: #080808; border-radius: 42px; border: 1px solid var(--border); overflow: hidden; position: relative; }
         model-viewer { width: 100%; height: 100%; --poster-color: transparent; }
 
-        /* --- GRADIENT FALL OFF (image_8.png circle fix) --- */
+        /* --- DISAPPEARING BOTTOM FIX (GENTLE BLUR) --- */
         .glass-footer {
-            position: absolute; bottom: 0; width: 100%; height: 180px;
-            /* Very gentle fall off from transparent to black */
-            background: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.8) 40%, transparent 100%);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            position: absolute; bottom: 0; width: 100%; height: 120px;
+            /* Only blurs the very bottom edge where the button sits */
+            background: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.4) 50%, transparent 100%);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
             display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
-            padding-bottom: 35px;
+            padding-bottom: 25px;
         }
+        .vis-pill { width: 85%; background: rgba(30, 30, 30, 0.5); border: 1px solid var(--border); border-top: 1px solid rgba(255,255,255,0.1); padding: 16px; border-radius: 50px; color: white; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-align: center; }
 
-        .vis-pill {
-            width: 85%; background: rgba(30, 30, 30, 0.4);
-            border: 1px solid var(--border); border-top: 1px solid rgba(255,255,255,0.1);
-            padding: 18px; border-radius: 50px; color: white;
-            font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
-            text-align: center;
-        }
-
-        /* --- PAGINATION DOTS (image_8.png style) --- */
-        .pagination {
-            position: absolute; bottom: 45px; left: 35px; display: flex; gap: 8px; z-index: 200;
-        }
-        .dot { width: 6px; height: 6px; background: rgba(255,255,255,0.2); border-radius: 50%; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-        .dot.active { width: 22px; background: var(--accent); border-radius: 10px; }
+        /* --- CENTERED DOTS --- */
+        .pagination { position: absolute; bottom: 35px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; z-index: 200; }
+        .dot { width: 6px; height: 6px; background: rgba(255,255,255,0.2); border-radius: 50%; transition: 0.4s; }
+        .dot.active { width: 20px; background: var(--accent); border-radius: 10px; }
     </style>
 </head>
 <body>
 
     <div id="splash">
         <div class="logo-container" id="logo-box">
-            <svg viewBox="0 0 100 120">
-                <path class="s-layer l-bottom" d="M20 80 L50 95 L80 80 L50 65 Z M20 80 L20 85 L50 100 L80 85 L80 80" />
-                <path class="s-layer l-mid" d="M20 55 L50 70 L80 55 L50 40 Z M20 55 L20 60 L50 75 L80 60 L80 55" />
-                <path class="s-layer l-top" d="M20 30 L50 45 L80 30 L50 15 Z M20 30 L20 35 L50 50 L80 35 L80 30" />
+            <svg viewBox="0 0 100 110">
+                <path class="s-layer l-bottom" d="M25 70 L50 82 L75 70 L50 58 Z M25 70 L25 74 L50 86 L75 74 L75 70" />
+                <path class="s-layer l-mid" d="M25 50 L50 62 L75 50 L50 38 Z M25 50 L25 54 L50 66 L75 54 L75 50" />
+                <path class="s-layer l-top" d="M25 30 L50 42 L75 30 L50 18 Z M25 30 L25 34 L50 46 L75 34 L75 30" />
             </svg>
         </div>
         <div class="loading-text">INITIALISING STRATUM3D</div>
@@ -116,7 +78,7 @@
 
     <div id="carousel">
         <div class="card-scene">
-            <div class="main-card" style="display:flex; align-items:center; justify-content:center; color:#444; font-size: 11px; letter-spacing: 1px;">
+            <div class="main-card" style="display:flex; align-items:center; justify-content:center; color:#444; font-size: 10px; letter-spacing: 1px;">
                 IMPORT .GLB OR .GLTF FILES
             </div>
         </div>
@@ -129,50 +91,36 @@
         const pagi = document.getElementById('pagi');
         const logoBox = document.getElementById('logo-box');
 
-        // Trigger animation on load
         window.onload = () => {
             logoBox.classList.add('anim');
             setTimeout(() => {
                 document.getElementById('splash').style.opacity = '0';
-                setTimeout(() => document.getElementById('splash').remove(), 800);
-            }, 4000);
+                setTimeout(() => document.getElementById('splash').remove(), 600);
+            }, 3200);
         };
 
         document.getElementById('file-in').addEventListener('change', (e) => {
             const files = Array.from(e.target.files);
-            carousel.innerHTML = '';
-            pagi.innerHTML = '';
-
+            carousel.innerHTML = ''; pagi.innerHTML = '';
             files.forEach((file, i) => {
                 const url = URL.createObjectURL(file);
                 const name = file.name.split('.')[0].toUpperCase();
-                
                 const scene = document.createElement('div');
                 scene.className = 'card-scene';
-                scene.innerHTML = `
-                    <div class="main-card">
-                        <model-viewer src="${url}" ar ar-modes="webxr scene-viewer quick-look" camera-controls touch-action="pan-y"></model-viewer>
-                        <div class="glass-footer">
-                            <div class="vis-pill" onclick="this.parentElement.previousElementSibling.activateAR()">
-                                VISUALISE ${name}
-                            </div>
-                        </div>
-                    </div>`;
+                scene.innerHTML = `<div class="main-card">
+                    <model-viewer src="${url}" ar camera-controls touch-action="pan-y"></model-viewer>
+                    <div class="glass-footer"><div class="vis-pill" onclick="this.parentElement.previousElementSibling.activateAR()">VISUALISE ${name}</div></div>
+                </div>`;
                 carousel.appendChild(scene);
-
                 const dot = document.createElement('div');
                 dot.className = `dot ${i === 0 ? 'active' : ''}`;
                 pagi.appendChild(dot);
             });
         });
 
-        // Snap and sync pagination dots
         carousel.addEventListener('scroll', () => {
             const index = Math.round(carousel.scrollLeft / window.innerWidth);
-            const dots = document.querySelectorAll('.dot');
-            dots.forEach((d, i) => {
-                d.classList.toggle('active', i === index);
-            });
+            document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === index));
         });
     </script>
 </body>
