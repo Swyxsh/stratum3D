@@ -8,110 +8,116 @@
     <style>
         :root { 
             --accent: #00f2ff;
-            --glass: rgba(15, 15, 15, 0.85);
-            --border: rgba(255, 255, 255, 0.1);
+            --glass: rgba(10, 10, 10, 0.8);
+            --border: rgba(255, 255, 255, 0.12);
         }
         
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; color: white; font-family: -apple-system, system-ui; overflow: hidden; }
 
-        /* --- LOADING SCREEN: TRUE ISOMETRIC STACK --- */
+        /* --- LOADING SCREEN: FIX --- */
         #splash {
             position: fixed; inset: 0; background: #000; z-index: 9999;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             transition: opacity 0.8s ease;
         }
 
-        .logo-container { width: 180px; position: relative; }
+        .logo-container { width: 160px; margin-bottom: 20px; }
         .s-layer { 
-            fill: none; stroke: var(--accent); stroke-width: 2; opacity: 0;
-            filter: drop-shadow(0 0 12px rgba(0, 242, 255, 0.5));
+            fill: none; stroke: var(--accent); stroke-width: 2.5; opacity: 0;
+            filter: drop-shadow(0 0 10px rgba(0, 242, 255, 0.6));
             transition: all 0.9s cubic-bezier(0.19, 1, 0.22, 1);
-            transform: translateY(100px) scale(0.8);
+            transform: translateY(60px);
         }
 
-        /* Sequential Build Logic: image_6.png style */
-        .anim .l-bottom { opacity: 0.4; transform: translateY(40px) scale(1); transition-delay: 0.2s; }
-        .anim .l-mid { opacity: 0.7; transform: translateY(20px) scale(1); transition-delay: 0.7s; }
-        .anim .l-top { opacity: 1; transform: translateY(0px) scale(1); transition-delay: 1.2s; }
+        /* Sequential Animation Trigger */
+        .anim .l-bottom { opacity: 0.5; transform: translateY(35px); transition-delay: 0.3s; }
+        .anim .l-mid { opacity: 0.8; transform: translateY(15px); transition-delay: 0.9s; }
+        .anim .l-top { opacity: 1; transform: translateY(-5px); transition-delay: 1.5s; }
 
-        /* --- HEADER --- */
+        .loading-text { letter-spacing: 5px; font-size: 10px; color: var(--accent); font-weight: 300; }
+
+        /* --- HEADER: TOP LEFT LOGO FIX --- */
         header { 
-            height: 80px; display: flex; align-items: center; justify-content: space-between; 
+            height: 90px; display: flex; align-items: center; justify-content: space-between; 
             padding: 0 25px; position: absolute; top: 0; width: calc(100% - 50px); z-index: 100;
         }
-        .logo-txt { font-weight: 800; font-size: 24px; letter-spacing: -1px; }
+        .logo-txt { font-weight: 900; font-size: 24px; letter-spacing: -0.5px; }
+
         .import-btn {
             background: var(--glass); border: 1px solid var(--border); border-top: 1px solid rgba(255,255,255,0.2);
-            color: var(--accent); font-size: 10px; font-weight: 800; text-transform: uppercase;
-            padding: 8px 18px; border-radius: 10px; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            color: var(--accent); font-size: 10px; font-weight: 800;
+            padding: 10px 20px; border-radius: 12px; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
         }
 
-        /* --- MAIN CARD: image_7.png SCALE --- */
-        #carousel { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; height: 100vh; }
+        /* --- BUMBLE-STYLE SNAP CAROUSEL --- */
+        #carousel { 
+            display: flex; overflow-x: auto; 
+            scroll-snap-type: x mandatory; /* The "Bumble" snap */
+            height: 100vh; width: 100vw;
+        }
         #carousel::-webkit-scrollbar { display: none; }
 
         .card-scene { 
             min-width: 100vw; height: 100%; display: flex; align-items: center; justify-content: center; 
-            padding-top: 40px;
+            scroll-snap-align: center; /* Locks the card in center */
+            scroll-snap-stop: always; /* Prevents skipping cards */
         }
         
         .main-card { 
-            width: 92%; height: 82%; background: #080808; border-radius: 45px; 
+            width: 92%; height: 80%; background: #0a0a0a; border-radius: 40px; 
             border: 1px solid var(--border); overflow: hidden; position: relative;
-            box-shadow: 0 40px 100px rgba(0,0,0,0.8);
         }
 
         model-viewer { width: 100%; height: 100%; --poster-color: transparent; }
 
-        /* --- THE BLURRED FOOTER (image_5/7 style) --- */
+        /* --- GRADIENT FALL OFF (image_8.png circle fix) --- */
         .glass-footer {
-            position: absolute; bottom: 0; width: 100%; height: 140px;
-            background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.9) 70%);
-            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            position: absolute; bottom: 0; width: 100%; height: 180px;
+            /* Very gentle fall off from transparent to black */
+            background: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.8) 40%, transparent 100%);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+            padding-bottom: 35px;
         }
 
         .vis-pill {
-            width: 85%; background: rgba(25, 25, 25, 0.6);
-            border: 1px solid var(--border); border-top: 1px solid rgba(255,255,255,0.15);
+            width: 85%; background: rgba(30, 30, 30, 0.4);
+            border: 1px solid var(--border); border-top: 1px solid rgba(255,255,255,0.1);
             padding: 18px; border-radius: 50px; color: white;
             font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
-            text-align: center; margin-bottom: 25px;
+            text-align: center;
         }
 
-        /* --- CARD COUNTER --- */
+        /* --- PAGINATION DOTS (image_8.png style) --- */
         .pagination {
-            position: absolute; bottom: 30px; display: flex; gap: 8px;
+            position: absolute; bottom: 45px; left: 35px; display: flex; gap: 8px; z-index: 200;
         }
-        .dot { width: 6px; height: 6px; background: rgba(255,255,255,0.2); border-radius: 50%; transition: 0.3s; }
-        .dot.active { width: 25px; background: var(--accent); border-radius: 10px; }
+        .dot { width: 6px; height: 6px; background: rgba(255,255,255,0.2); border-radius: 50%; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .dot.active { width: 22px; background: var(--accent); border-radius: 10px; }
     </style>
 </head>
 <body>
 
     <div id="splash">
-        <div class="logo-container anim">
+        <div class="logo-container" id="logo-box">
             <svg viewBox="0 0 100 120">
-                <!-- Bottom Slab -->
                 <path class="s-layer l-bottom" d="M20 80 L50 95 L80 80 L50 65 Z M20 80 L20 85 L50 100 L80 85 L80 80" />
-                <!-- Middle Slab -->
                 <path class="s-layer l-mid" d="M20 55 L50 70 L80 55 L50 40 Z M20 55 L20 60 L50 75 L80 60 L80 55" />
-                <!-- Top Slab -->
                 <path class="s-layer l-top" d="M20 30 L50 45 L80 30 L50 15 Z M20 30 L20 35 L50 50 L80 35 L80 30" />
             </svg>
         </div>
-        <div style="margin-top:20px; letter-spacing:8px; font-size:10px; color:var(--accent)">INITIALISING</div>
+        <div class="loading-text">INITIALISING STRATUM3D</div>
     </div>
 
     <header>
-        <div class="logo-txt">Stratum</div>
+        <div class="logo-txt">STRATUM3D</div>
         <label class="import-btn">IMPORT<input type="file" id="file-in" multiple style="display: none;"></label>
     </header>
 
     <div id="carousel">
         <div class="card-scene">
-            <div class="main-card" style="display:flex; align-items:center; justify-content:center; color:#333;">
-                READY FOR .GLB FILES
+            <div class="main-card" style="display:flex; align-items:center; justify-content:center; color:#444; font-size: 11px; letter-spacing: 1px;">
+                IMPORT .GLB OR .GLTF FILES
             </div>
         </div>
     </div>
@@ -121,12 +127,15 @@
     <script>
         const carousel = document.getElementById('carousel');
         const pagi = document.getElementById('pagi');
+        const logoBox = document.getElementById('logo-box');
 
+        // Trigger animation on load
         window.onload = () => {
+            logoBox.classList.add('anim');
             setTimeout(() => {
                 document.getElementById('splash').style.opacity = '0';
                 setTimeout(() => document.getElementById('splash').remove(), 800);
-            }, 3000);
+            }, 4000);
         };
 
         document.getElementById('file-in').addEventListener('change', (e) => {
@@ -142,7 +151,7 @@
                 scene.className = 'card-scene';
                 scene.innerHTML = `
                     <div class="main-card">
-                        <model-viewer src="${url}" ar camera-controls touch-action="pan-y"></model-viewer>
+                        <model-viewer src="${url}" ar ar-modes="webxr scene-viewer quick-look" camera-controls touch-action="pan-y"></model-viewer>
                         <div class="glass-footer">
                             <div class="vis-pill" onclick="this.parentElement.previousElementSibling.activateAR()">
                                 VISUALISE ${name}
@@ -157,9 +166,11 @@
             });
         });
 
+        // Snap and sync pagination dots
         carousel.addEventListener('scroll', () => {
             const index = Math.round(carousel.scrollLeft / window.innerWidth);
-            document.querySelectorAll('.dot').forEach((d, i) => {
+            const dots = document.querySelectorAll('.dot');
+            dots.forEach((d, i) => {
                 d.classList.toggle('active', i === index);
             });
         });
