@@ -13,7 +13,7 @@
         }
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; color: white; font-family: -apple-system, system-ui; overflow: hidden; }
 
-        /* --- LOGO: HOLLOW SQUARES & TIGHT STACK --- */
+        /* --- SPLASH SCREEN --- */
         #splash {
             position: fixed; inset: 0; background: #000; z-index: 9999;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -25,7 +25,6 @@
             filter: drop-shadow(0 0 10px rgba(0, 242, 255, 0.5));
             transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
         }
-        /* Spacing fixed to be nearly flush */
         .anim .l-bottom { opacity: 0.3; transform: translateY(8px); transition-delay: 0.1s; }
         .anim .l-mid { opacity: 0.6; transform: translateY(4px); transition-delay: 0.3s; }
         .anim .l-top { opacity: 1; transform: translateY(0px); transition-delay: 0.5s; }
@@ -38,21 +37,27 @@
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
         }
 
-        /* --- LAYOUT FIX: NO CLIPPING --- */
+        /* --- HEADER --- */
         header { height: 60px; display: flex; align-items: center; justify-content: space-between; padding: 0 25px; }
         .logo-txt { font-weight: 900; font-size: 24px; letter-spacing: -0.5px; }
         
+        /* --- CAROUSEL & TALL CARD (FIXED HEIGHT) --- */
         #carousel { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; height: calc(100% - 140px); width: 100vw; -webkit-overflow-scrolling: touch; }
         #carousel::-webkit-scrollbar { display: none; }
         .card-scene { min-width: 100vw; height: 100%; display: flex; align-items: center; justify-content: center; scroll-snap-align: center; }
         
         .main-card { 
-            width: 92%; height: 95%; background: #0a0a0a; border-radius: 40px; 
-            border: 1px solid var(--border); overflow: hidden; position: relative;
+            width: 92%; 
+            height: 82dvh; /* Updated to reach lower as per image_3.png */
+            background: #0a0a0a; 
+            border-radius: 40px; 
+            border: 1px solid var(--border); 
+            overflow: hidden; 
+            position: relative;
         }
         model-viewer { width: 100%; height: 100%; background-color: transparent; }
 
-        /* --- SOFT BLUE FALL OFF & GLOWING BUTTON --- */
+        /* --- OVERLAY & BUTTON (FIXED GLOW & FONT) --- */
         .vignette-bottom {
             position: absolute; bottom: 0; width: 100%; height: 35%;
             background: linear-gradient(to top, rgba(0, 15, 20, 1) 0%, rgba(0, 40, 50, 0.2) 50%, transparent 100%);
@@ -66,17 +71,23 @@
         .vis-pill { 
             width: 85%; background: rgba(30, 30, 30, 0.7); border: 1px solid var(--border); 
             border-top: 1px solid rgba(255,255,255,0.15); padding: 20px; border-radius: 50px; 
-            color: white; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-align: center;
+            color: white; 
+            font-size: 9px; /* Smaller font as requested */
+            font-weight: 700; letter-spacing: 1.5px; text-align: center;
             pointer-events: auto; backdrop-filter: blur(10px); transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            
+            /* REMOVES MOBILE TAP HIGHLIGHT/GLOW */
+            -webkit-tap-highlight-color: transparent;
+            outline: none;
         }
-        /* Pressed Glow State */
+
         .vis-pill:active { 
             background: var(--accent); color: #000;
             box-shadow: 0 0 40px var(--accent), 0 0 10px rgba(255,255,255,0.5);
             transform: scale(0.95); border-color: white;
         }
 
-        /* --- PAGINATION DOTS (BOTTOM) --- */
+        /* --- PAGINATION --- */
         .dots-container { height: 40px; display: flex; align-items: center; justify-content: center; }
         .dot { width: 6px; height: 6px; background: rgba(255,255,255,0.2); border-radius: 50%; transition: 0.4s; margin: 0 5px; }
         .dot.active { width: 24px; background: var(--accent); border-radius: 10px; }
