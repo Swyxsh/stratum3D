@@ -8,87 +8,88 @@
     <style>
         :root { 
             --accent: #00f2ff; 
-            --glass: rgba(10, 10, 10, 0.7); 
+            --glass: rgba(10, 10, 10, 0.8); 
             --border: rgba(255, 255, 255, 0.1); 
         }
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; color: white; font-family: -apple-system, system-ui; overflow: hidden; }
 
-        /* --- COMPACT LOGO STACK --- */
+        /* --- LOGO: TIGHT ISOMETRIC STACK --- */
         #splash {
             position: fixed; inset: 0; background: #000; z-index: 9999;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             transition: opacity 0.6s ease;
         }
-        .logo-container { width: 140px; margin-bottom: 10px; }
+        .logo-container { width: 130px; }
         .s-layer { 
             fill: none; stroke: var(--accent); stroke-width: 2.2; opacity: 0;
-            filter: drop-shadow(0 0 8px rgba(0, 242, 255, 0.5));
-            transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1);
-            transform: translateY(30px);
+            filter: drop-shadow(0 0 8px rgba(0, 242, 255, 0.4));
+            transition: all 0.7s cubic-bezier(0.19, 1, 0.22, 1);
         }
-        .anim .l-bottom { opacity: 0.4; transform: translateY(16px); transition-delay: 0.2s; }
-        .anim .l-mid { opacity: 0.7; transform: translateY(8px); transition-delay: 0.6s; }
-        .anim .l-top { opacity: 1; transform: translateY(0px); transition-delay: 1s; }
-        .loading-text { letter-spacing: 4px; font-size: 9px; color: var(--accent); font-weight: 300; margin-top: 15px; }
+        .anim .l-bottom { opacity: 0.3; transform: translateY(14px); transition-delay: 0.1s; }
+        .anim .l-mid { opacity: 0.6; transform: translateY(7px); transition-delay: 0.4s; }
+        .anim .l-top { opacity: 1; transform: translateY(0px); transition-delay: 0.8s; }
+        .loading-text { letter-spacing: 4px; font-size: 9px; color: var(--accent); font-weight: 300; margin-top: 20px; }
 
-        /* --- HEADER --- */
-        header { 
-            height: 10vh; display: flex; align-items: center; justify-content: space-between; 
-            padding: 0 6vw; position: relative; z-index: 100; 
-        }
-        .logo-txt { font-weight: 900; font-size: 24px; letter-spacing: -0.5px; }
-        .import-btn { background: var(--glass); border: 1px solid var(--border); border-top: 1px solid rgba(255,255,255,0.2); color: var(--accent); font-size: 10px; font-weight: 800; padding: 8px 16px; border-radius: 10px; backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); }
+        /* --- LAYOUT FIX --- */
+        header { height: 8vh; display: flex; align-items: center; justify-content: space-between; padding: 0 6vw; position: relative; z-index: 100; }
+        .logo-txt { font-weight: 900; font-size: 22px; letter-spacing: -0.5px; }
+        .import-btn { background: var(--glass); border: 1px solid var(--border); border-top: 1px solid rgba(255,255,255,0.2); color: var(--accent); font-size: 10px; font-weight: 800; padding: 8px 16px; border-radius: 10px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
 
-        /* --- BUMBLE SNAP CAROUSEL --- */
-        #carousel { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; height: 80vh; width: 100vw; -webkit-overflow-scrolling: touch; }
+        #carousel { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; height: 78vh; width: 100vw; -webkit-overflow-scrolling: touch; }
         #carousel::-webkit-scrollbar { display: none; }
         .card-scene { min-width: 100vw; height: 100%; display: flex; align-items: center; justify-content: center; scroll-snap-align: center; scroll-snap-stop: always; }
         
-        /* Fixed Sizing to prevent overflow */
         .main-card { 
-            width: 90vw; height: 75vh; background: #080808; border-radius: 40px; 
+            width: 90vw; height: 72vh; background: #080808; border-radius: 38px; 
             border: 1px solid var(--border); overflow: hidden; position: relative;
-            box-shadow: inset 0 -50px 100px rgba(0, 242, 255, 0.05); /* Subtle inner vignette */
         }
-        model-viewer { width: 100%; height: 100%; --poster-color: transparent; }
 
-        /* --- THE GRADUAL "BLUE FALL-OFF" FOOTER --- */
-        .glass-footer {
-            position: absolute; bottom: 0; width: 100%; height: 35%;
-            /* Soft Blue Gradient with Increasing Blur */
+        /* --- THE GRADUAL BLUE FALL-OFF & GLOWING BUTTON --- */
+        .vignette-bottom {
+            position: absolute; bottom: 0; width: 100%; height: 45%;
             background: linear-gradient(to top, 
-                rgba(0, 0, 0, 1) 0%, 
-                rgba(0, 50, 60, 0.6) 40%, 
-                rgba(0, 0, 0, 0) 100%
+                rgba(0, 10, 15, 1) 0%, 
+                rgba(0, 40, 50, 0.4) 40%, 
+                transparent 100%
             );
-            backdrop-filter: blur(1px); /* Start low */
-            -webkit-backdrop-filter: blur(1px);
-            mask-image: linear-gradient(to top, black 20%, transparent 100%);
-            -webkit-mask-image: linear-gradient(to top, black 20%, transparent 100%);
+            backdrop-filter: blur(var(--blur-amount, 0px));
+            mask-image: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.5) 50%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.5) 50%, transparent 100%);
             display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
             padding-bottom: 3vh;
             pointer-events: none;
         }
 
-        /* Gradual blur intensification wrapper */
-        .blur-intensifier {
+        .blur-layer {
             position: absolute; inset: 0;
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            mask-image: linear-gradient(to top, black 0%, transparent 50%);
-            -webkit-mask-image: linear-gradient(to top, black 0%, transparent 50%);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            mask-image: linear-gradient(to top, black 0%, transparent 60%);
+            -webkit-mask-image: linear-gradient(to top, black 0%, transparent 60%);
         }
 
         .vis-pill { 
-            width: 80%; background: rgba(20, 20, 20, 0.4); border: 1px solid var(--border); 
-            border-top: 1px solid rgba(255,255,255,0.15); padding: 18px; border-radius: 50px; 
+            width: 82%; background: rgba(25, 25, 25, 0.5); border: 1px solid var(--border); 
+            border-top: 1px solid rgba(255,255,255,0.2); padding: 18px; border-radius: 50px; 
             color: white; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-align: center;
-            pointer-events: auto;
+            pointer-events: auto; backdrop-filter: blur(5px);
+            /* Define the glow transition */
+            transition: all 0.15s ease-out, box-shadow 0.1s ease-out;
         }
 
-        /* --- PAGINATION (Always visible) --- */
-        .pagination-container { height: 10vh; width: 100%; display: flex; align-items: center; justify-content: center; position: relative; }
-        .dot { width: 6px; height: 6px; background: rgba(255,255,255,0.2); border-radius: 50%; transition: 0.4s; margin: 0 4px; }
+        /* --- THE GLOW EFFECT WHEN PRESSED --- */
+        .vis-pill:active { 
+            background: rgba(0, 242, 255, 0.6); /* Translucent Stratum color */
+            border-color: var(--accent);
+            color: #000; /* Black text for contrast */
+            /* Neon Box-Shadow Glow */
+            box-shadow: 0 0 20px 5px rgba(0, 242, 255, 0.7), 0 0 40px 10px rgba(0, 242, 255, 0.4);
+            transform: scale(0.97); /* Subtle press-down scale */
+        }
+
+        /* --- PAGINATION --- */
+        .pagi-wrap { height: 10vh; display: flex; align-items: center; justify-content: center; }
+        .dot { width: 6px; height: 6px; background: rgba(255,255,255,0.15); border-radius: 50%; transition: 0.4s; margin: 0 4px; }
         .dot.active { width: 22px; background: var(--accent); border-radius: 10px; }
     </style>
 </head>
@@ -112,13 +113,13 @@
 
     <div id="carousel">
         <div class="card-scene">
-            <div class="main-card" style="display:flex; align-items:center; justify-content:center; color:#555; font-size: 11px; letter-spacing: 1px; text-align: center; padding: 20px;">
-                IMPORT .GLB OR .GLTF FILES<br>TO VIEW IN 3D
+            <div class="main-card" style="display:flex; align-items:center; justify-content:center; color:#444; font-size: 11px; letter-spacing: 1.5px; text-align:center;">
+                DROP .GLB / .GLTF<br>TO START VISUALISING
             </div>
         </div>
     </div>
 
-    <div class="pagination-container">
+    <div class="pagi-wrap">
         <div id="pagi" style="display:flex;"></div>
     </div>
 
@@ -132,7 +133,7 @@
             setTimeout(() => {
                 document.getElementById('splash').style.opacity = '0';
                 setTimeout(() => document.getElementById('splash').remove(), 600);
-            }, 3200);
+            }, 3000);
         };
 
         document.getElementById('file-in').addEventListener('change', (e) => {
@@ -144,9 +145,9 @@
                 const scene = document.createElement('div');
                 scene.className = 'card-scene';
                 scene.innerHTML = `<div class="main-card">
-                    <model-viewer src="${url}" ar camera-controls touch-action="pan-y"></model-viewer>
-                    <div class="glass-footer">
-                        <div class="blur-intensifier"></div>
+                    <model-viewer src="${url}" ar camera-controls touch-action="pan-y" interaction-prompt="none"></model-viewer>
+                    <div class="vignette-bottom">
+                        <div class="blur-layer"></div>
                         <div class="vis-pill" onclick="this.parentElement.previousElementSibling.activateAR()">VISUALISE ${name}</div>
                     </div>
                 </div>`;
