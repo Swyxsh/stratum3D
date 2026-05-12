@@ -7,172 +7,160 @@
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     <style>
         :root { 
-            --stratum-cyan: #00f2ff;
-            --glass-black: rgba(15, 15, 15, 0.75);
-            --glass-border: rgba(255, 255, 255, 0.12);
-            --bg-dark: #000000;
+            --accent: #00f2ff;
+            --glass: rgba(15, 15, 15, 0.85);
+            --border: rgba(255, 255, 255, 0.1);
         }
         
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: var(--bg-dark); color: white; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; overflow: hidden; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; color: white; font-family: -apple-system, system-ui; overflow: hidden; }
 
-        /* --- LOADING SCREEN: SEQUENTIAL ANIMATION --- */
-        #splash-screen {
-            position: fixed; inset: 0; background: var(--bg-dark); z-index: 9999;
+        /* --- LOADING SCREEN: TRUE ISOMETRIC STACK --- */
+        #splash {
+            position: fixed; inset: 0; background: #000; z-index: 9999;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             transition: opacity 0.8s ease;
         }
 
-        .logo-box { width: 180px; height: 180px; position: relative; }
-        
-        .stratum-layer { 
-            opacity: 0; 
-            transform: translateY(30px); 
-            fill: rgba(0, 242, 255, 0.1); 
-            stroke: var(--stratum-cyan); 
-            stroke-width: 1.2;
-            filter: drop-shadow(0 0 8px rgba(0, 242, 255, 0.4));
-            transition: all 0.7s cubic-bezier(0.2, 0.8, 0.2, 1); 
-        }
-        
-        /* Sequential Build-up */
-        .animate .layer-bottom { opacity: 1; transform: translateY(0); transition-delay: 0.4s; }
-        .animate .layer-mid { opacity: 1; transform: translateY(0); transition-delay: 1.0s; }
-        .animate .layer-top { opacity: 1; transform: translateY(0); transition-delay: 1.6s; }
-        
-        .loading-text { 
-            font-size: 11px; text-transform: uppercase; letter-spacing: 6px; 
-            color: var(--stratum-cyan); margin-top: 40px; font-weight: 300;
-            animation: pulse 2s infinite ease-in-out;
+        .logo-container { width: 180px; position: relative; }
+        .s-layer { 
+            fill: none; stroke: var(--accent); stroke-width: 2; opacity: 0;
+            filter: drop-shadow(0 0 12px rgba(0, 242, 255, 0.5));
+            transition: all 0.9s cubic-bezier(0.19, 1, 0.22, 1);
+            transform: translateY(100px) scale(0.8);
         }
 
-        /* --- HEADER & GLASS BUTTONS --- */
+        /* Sequential Build Logic: image_6.png style */
+        .anim .l-bottom { opacity: 0.4; transform: translateY(40px) scale(1); transition-delay: 0.2s; }
+        .anim .l-mid { opacity: 0.7; transform: translateY(20px) scale(1); transition-delay: 0.7s; }
+        .anim .l-top { opacity: 1; transform: translateY(0px) scale(1); transition-delay: 1.2s; }
+
+        /* --- HEADER --- */
         header { 
             height: 80px; display: flex; align-items: center; justify-content: space-between; 
-            padding: 0 25px; z-index: 1000; position: relative;
+            padding: 0 25px; position: absolute; top: 0; width: calc(100% - 50px); z-index: 100;
         }
-        
-        .logo-text { font-weight: 800; font-size: 22px; letter-spacing: -0.5px; }
-
-        .glass-btn {
-            background: var(--glass-black);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border: 1px solid var(--glass-border);
-            border-top: 1px solid rgba(255,255,255,0.2); /* Glass highlight */
-            color: var(--stratum-cyan);
-            font-size: 12px; font-weight: 600; text-transform: uppercase;
-            padding: 10px 20px; border-radius: 12px;
-            cursor: pointer; transition: 0.3s;
+        .logo-txt { font-weight: 800; font-size: 24px; letter-spacing: -1px; }
+        .import-btn {
+            background: var(--glass); border: 1px solid var(--border); border-top: 1px solid rgba(255,255,255,0.2);
+            color: var(--accent); font-size: 10px; font-weight: 800; text-transform: uppercase;
+            padding: 8px 18px; border-radius: 10px; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
         }
 
-        /* --- MAIN CAROUSEL --- */
-        #carousel { 
-            display: flex; overflow-x: auto; scroll-snap-type: x mandatory; 
-            width: 100vw; height: calc(100vh - 100px); scroll-behavior: smooth;
-        }
+        /* --- MAIN CARD: image_7.png SCALE --- */
+        #carousel { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; height: 100vh; }
         #carousel::-webkit-scrollbar { display: none; }
 
-        .model-card { 
-            min-width: 100vw; height: 100%; scroll-snap-align: start; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+        .card-scene { 
+            min-width: 100vw; height: 100%; display: flex; align-items: center; justify-content: center; 
+            padding-top: 40px;
         }
         
-        /* The Card Frame from image_5.png */
-        .glass-card { 
-            width: 90%; height: 75%; 
-            background: rgba(255,255,255,0.02);
-            border-radius: 40px; 
-            border: 1px solid var(--glass-border);
-            overflow: hidden; position: relative;
-            display: flex; flex-direction: column;
+        .main-card { 
+            width: 92%; height: 82%; background: #080808; border-radius: 45px; 
+            border: 1px solid var(--border); overflow: hidden; position: relative;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.8);
         }
 
-        model-viewer { width: 100%; height: 85%; outline: none; background: transparent; }
+        model-viewer { width: 100%; height: 100%; --poster-color: transparent; }
 
-        /* VISUALISE BUTTON ON CARD */
-        .ar-overlay {
-            width: 100%; padding: 20px 0;
-            display: flex; justify-content: center; align-items: center;
-            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+        /* --- THE BLURRED FOOTER (image_5/7 style) --- */
+        .glass-footer {
+            position: absolute; bottom: 0; width: 100%; height: 140px;
+            background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.9) 70%);
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
 
-        .visualise-btn {
-            width: 85%; background: var(--glass-black);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-top: 1px solid rgba(255,255,255,0.2);
-            color: white; padding: 16px; border-radius: 50px;
-            font-size: 11px; font-weight: 700; text-transform: uppercase;
-            letter-spacing: 1px; display: flex; justify-content: center;
+        .vis-pill {
+            width: 85%; background: rgba(25, 25, 25, 0.6);
+            border: 1px solid var(--border); border-top: 1px solid rgba(255,255,255,0.15);
+            padding: 18px; border-radius: 50px; color: white;
+            font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+            text-align: center; margin-bottom: 25px;
         }
 
-        @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+        /* --- CARD COUNTER --- */
+        .pagination {
+            position: absolute; bottom: 30px; display: flex; gap: 8px;
+        }
+        .dot { width: 6px; height: 6px; background: rgba(255,255,255,0.2); border-radius: 50%; transition: 0.3s; }
+        .dot.active { width: 25px; background: var(--accent); border-radius: 10px; }
     </style>
 </head>
 <body>
 
-    <div id="splash-screen">
-        <div class="logo-box animate">
-            <svg viewBox="0 0 100 100">
-                <path class="stratum-layer layer-bottom" d="M20 75 L50 88 L80 75 L50 62 Z M20 75 L20 80 L50 93 L80 80 L80 75" />
-                <path class="stratum-layer layer-mid" d="M20 52 L50 65 L80 52 L50 39 Z M20 52 L20 57 L50 70 L80 57 L80 52" />
-                <path class="stratum-layer layer-top" d="M20 29 L50 42 L80 29 L50 16 Z M20 29 L20 34 L50 47 L80 34 L80 29" />
+    <div id="splash">
+        <div class="logo-container anim">
+            <svg viewBox="0 0 100 120">
+                <!-- Bottom Slab -->
+                <path class="s-layer l-bottom" d="M20 80 L50 95 L80 80 L50 65 Z M20 80 L20 85 L50 100 L80 85 L80 80" />
+                <!-- Middle Slab -->
+                <path class="s-layer l-mid" d="M20 55 L50 70 L80 55 L50 40 Z M20 55 L20 60 L50 75 L80 60 L80 55" />
+                <!-- Top Slab -->
+                <path class="s-layer l-top" d="M20 30 L50 45 L80 30 L50 15 Z M20 30 L20 35 L50 50 L80 35 L80 30" />
             </svg>
         </div>
-        <div class="loading-text">Initialising Stratum</div>
+        <div style="margin-top:20px; letter-spacing:8px; font-size:10px; color:var(--accent)">INITIALISING</div>
     </div>
 
     <header>
-        <span class="logo-text">Stratum</span>
-        <label class="glass-btn">
-            Import
-            <input type="file" id="file-input" multiple style="display: none;">
-        </label>
+        <div class="logo-txt">Stratum</div>
+        <label class="import-btn">IMPORT<input type="file" id="file-in" multiple style="display: none;"></label>
     </header>
 
     <div id="carousel">
-        <div class="model-card">
-            <div class="glass-card" style="justify-content: center; align-items: center; opacity: 0.4;">
-                <p>Upload 3D Models (.glb/.gltf)</p>
+        <div class="card-scene">
+            <div class="main-card" style="display:flex; align-items:center; justify-content:center; color:#333;">
+                READY FOR .GLB FILES
             </div>
         </div>
     </div>
 
+    <div class="pagination" id="pagi"></div>
+
     <script>
-        const splash = document.getElementById('splash-screen');
-        const fileInput = document.getElementById('file-input');
         const carousel = document.getElementById('carousel');
+        const pagi = document.getElementById('pagi');
 
-        // Splash handling
-        window.addEventListener('load', () => {
+        window.onload = () => {
             setTimeout(() => {
-                splash.style.opacity = '0';
-                setTimeout(() => splash.remove(), 800);
-            }, 3800);
-        });
+                document.getElementById('splash').style.opacity = '0';
+                setTimeout(() => document.getElementById('splash').remove(), 800);
+            }, 3000);
+        };
 
-        fileInput.addEventListener('change', (e) => {
+        document.getElementById('file-in').addEventListener('change', (e) => {
             const files = Array.from(e.target.files);
-            if (files.length === 0) return;
-            
             carousel.innerHTML = '';
-            files.forEach((file) => {
+            pagi.innerHTML = '';
+
+            files.forEach((file, i) => {
                 const url = URL.createObjectURL(file);
-                const fileName = file.name.replace(/\.[^/.]+$/, "").toUpperCase();
+                const name = file.name.split('.')[0].toUpperCase();
                 
-                const card = document.createElement('div');
-                card.className = 'model-card';
-                card.innerHTML = `
-                    <div class="glass-card">
-                        <model-viewer src="${url}" ar ar-modes="webxr scene-viewer quick-look" camera-controls touch-action="pan-y"></model-viewer>
-                        <div class="ar-overlay">
-                            <button class="visualise-btn" onclick="this.parentElement.previousElementSibling.activateAR()">
-                                VISUALISE ${fileName}
-                            </button>
+                const scene = document.createElement('div');
+                scene.className = 'card-scene';
+                scene.innerHTML = `
+                    <div class="main-card">
+                        <model-viewer src="${url}" ar camera-controls touch-action="pan-y"></model-viewer>
+                        <div class="glass-footer">
+                            <div class="vis-pill" onclick="this.parentElement.previousElementSibling.activateAR()">
+                                VISUALISE ${name}
+                            </div>
                         </div>
                     </div>`;
-                carousel.appendChild(card);
+                carousel.appendChild(scene);
+
+                const dot = document.createElement('div');
+                dot.className = `dot ${i === 0 ? 'active' : ''}`;
+                pagi.appendChild(dot);
+            });
+        });
+
+        carousel.addEventListener('scroll', () => {
+            const index = Math.round(carousel.scrollLeft / window.innerWidth);
+            document.querySelectorAll('.dot').forEach((d, i) => {
+                d.classList.toggle('active', i === index);
             });
         });
     </script>
